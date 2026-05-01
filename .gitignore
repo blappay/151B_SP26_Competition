@@ -1,6 +1,7 @@
 .claude
 .venv
-results
-data
-__pycache__
-LICENSE
+results/
+data/
+__pycache__/
+.ipynb_checkpoints/
+notebooks_old/
