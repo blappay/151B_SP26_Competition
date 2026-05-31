@@ -79,15 +79,21 @@ hf auth login
 
 ## Running Inference
 
-To run the full private inference pipeline and create the final submission CSV:
+The submission uses `run_inference.py` as the single entry point. It can be run from the command line with configurable options:
 
 ```bash
-python run_inference.py \
-  --data data/private.jsonl \
-  --output submission.csv \
-  --run-name final_submission \
-  --fallback-lora-path blappay/qwen3-math-sftdpo-adapter
-```
+python run_inference.py [OPTIONS]
+
+| Option                 |                             Default | Description                                                                                                                                          |
+| ---------------------- | ----------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--data`               |                `data/private.jsonl` | Path to the input JSONL dataset. For final inference, this should point to the private test set.                                                     |
+| `--output`             |                    `submission.csv` | Path where the final submission CSV is written. The CSV uses the required `id,response` format.                                                      |
+| `--run-name`           |                    `submission_run` | Name of the runtime artifact folder created under `results/`. For example, `--run-name final_submission` writes logs to `results/final_submission/`. |
+| `--model-id`           |       `Qwen/Qwen3-4B-Thinking-2507` | Hugging Face model ID for the base model.                                                                                                            |
+| `--fallback-lora-path` | `blappay/qwen3-math-sftdpo-adapter` | Hugging Face repo path for the MCQ fallback LoRA adapter.                                                                                            |
+| `--no-fallback`        |                            disabled | If included, disables the MCQ LoRA fallback and uses only the base model pipeline.                                                                   |
+| `--test-limit`         |                              `None` | Optional integer limit on the number of examples to run. Useful for smoke tests. Omit this for full private inference.                               |
+| `--gpu-id`             |                                 `0` | GPU index to use through `CUDA_VISIBLE_DEVICES`.                                                                                                     |
 
 This writes the final submission file to:
 
@@ -98,7 +104,7 @@ submission.csv
 and stores runtime logs/artifacts under:
 
 ```text
-results/final_submission/
+results/submission_run/
 ```
 
 The run folder includes files such as:
