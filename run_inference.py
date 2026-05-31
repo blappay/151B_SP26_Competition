@@ -797,30 +797,41 @@ def run_solver_pipeline(
     return unresolved
 
 
-def write_submission_csv(data: list[dict], responses_by_id: dict, output_csv: str | Path) -> None:
+def fallback_response_for_item(item: dict) -> str:
     """
-    Official submission format:
-      id,response
+    Kaggle rejects blank/null response fields.
+    If a problem was dropped/unverified, submit a harmless fallback response.
+    """
+    if bool(item.get("options")):
+        return "Unable to verify confidently. Final answer: \\boxed{A}"
+    return "Unable to verify confidently. Final answer: \\boxed{0}"
 
-    The response field must contain the full model output trace, not just the extracted
-    final answer. csv.DictWriter handles commas, newlines, and quote escaping.
-    Every id in the input data gets a row. Unanswered/unverified rows get an empty response.
-    """
+
+def write_submission_csv(data: list[dict], responses_by_id: dict, output_csv: str | Path) -> None:
     output_csv = Path(output_csv)
-    output_csv.parent.mkdir(parents=True, exist_ok=True)
+
+    # Only make parent folder if there is one.
+    if output_csv.parent != Path("."):
+        output_csv.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_csv, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=["id", "response"], quoting=csv.QUOTE_MINIMAL)
+        writer = csv.DictWriter(f, fieldnames=["id", "response"])
         writer.writeheader()
 
         for item in data:
             qid = str(item["id"])
-            if qid in responses_by_id:
-                response = response_for_submission(responses_by_id[qid])
-            else:
-                response = ""
 
-            writer.writerow({"id": item["id"], "response": response})
+            if qid in responses_by_id:
+                response = str(responses_by_id[qid].get("response", "")).strip()
+                if not response:
+                    response = fallback_response_for_item(item)
+            else:
+                response = fallback_response_for_item(item)
+
+            writer.writerow({
+                "id": item["id"],
+                "response": response,
+            })
 
 
 def write_summary(data: list[dict], state: InferenceState, output_csv: str | Path):
