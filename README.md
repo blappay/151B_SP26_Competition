@@ -83,6 +83,7 @@ The submission uses `run_inference.py` as the single entry point. It can be run 
 
 ```bash
 python run_inference.py [OPTIONS]
+```
 
 | Option                 |                             Default | Description                                                                                                                                          |
 | ---------------------- | ----------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
