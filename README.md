@@ -222,3 +222,12 @@ and runtime files under:
 ```text
 results/smoke_test/
 ```
+
+## Open-source Data & AI Usage Acknowledgement
+LoRA training data source: `hbXNov/distill_r1_qwen_math_1.5b_128_solns_math_train`, Hugging Face Datasets. 
+- Used as a source of distilled math solution traces, then filtered/cleaned before training
+
+OpenAI. (2026). ChatGPT (GPT-5.5 Thinking) [Large language model]. https://chatgpt.com/
+- Assisted in debugging and analysis of model results
+- Assisted in finding and processing open-source data for training
+
